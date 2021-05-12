@@ -1,3 +1,11 @@
+/**
+ * 模拟浏览器的requestIdleCallback函数
+ * 
+ * 实现在浏览器空闲时后回调指定的任务
+ * 
+ * @author luodongseu
+ */
+
 /// 截止时间对象
 export interface Deadline {
   timeRemaining(): number;
