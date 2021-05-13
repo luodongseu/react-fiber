@@ -714,9 +714,10 @@ function useReducer<T>(reducerFn: (oldValue: T, action: any) => T, initValue: T)
       currentFnFiber.alternate.hooks[hookIndex] : globalHookQueue[globalHookIndex];
   const hook: Hook<T> = {
     id: Math.random(),
-    state: oldHook && oldHook.state ? oldHook.state : initValue,
+    state: oldHook && (oldHook.state !== undefined) ? oldHook.state : initValue,
     type: "STATE",
-    fn: reducerFn
+    fn: reducerFn,
+    dispatch: oldHook?.dispatch
   };
   currentFnFiber.hookIndex = ++hookIndex;
   globalHookIndex++;
@@ -725,7 +726,7 @@ function useReducer<T>(reducerFn: (oldValue: T, action: any) => T, initValue: T)
   if (!globalHookQueue[globalHookIndex]) globalHookQueue.push(hook);
 
   /// 新值
-  const dispatch = <R extends T>(action: R) => {
+  hook.dispatch = hook.dispatch || (<R extends T>(action: R) => {
     hook.state = hook.fn(hook.state, action);
     // 重置全局的globalHookIndex: 重做reconcile时需要读取
     globalHookIndex = 0;
@@ -740,8 +741,8 @@ function useReducer<T>(reducerFn: (oldValue: T, action: any) => T, initValue: T)
       alternate: currentRoot
     };
     requestIdleCallback(workLoop);
-  };
-  return [hook.state as T, dispatch] as const;
+  });
+  return [hook.state as T, hook.dispatch] as const;
 
 }
 
