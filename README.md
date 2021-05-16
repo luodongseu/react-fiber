@@ -1,4 +1,4 @@
-# react-learning 
+# react-fiber  A simple React Fiber framework
 
 ----------------------------------------
 
